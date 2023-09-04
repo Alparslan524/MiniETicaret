@@ -5,10 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Abstractşons
+namespace Application.Repositories.Entity_Repository.CustomerRepository
 {
-    public interface IProductService
+    public interface ICustomerReadRepository : IReadRepository<Customer>
     {
-        List<Product> GetProducts();
     }
 }
