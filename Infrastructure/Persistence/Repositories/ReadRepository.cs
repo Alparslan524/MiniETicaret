@@ -43,7 +43,8 @@ namespace Persistence.Repositories
 
         public async Task<T> GetByIdAsync(int id)
         {
-            return await Table.FirstOrDefaultAsync(data => data.Id == id);
+            //return await Table.FirstOrDefaultAsync(data => data.Id == id);
+            return await Table.FindAsync(id);
         }
     }
 }

@@ -22,19 +22,19 @@ namespace Persistence
         public static void AddPersistenceServices(this IServiceCollection serviceCollection)
         {
             //DB bağlantısı
-            serviceCollection.AddDbContext<EntityFrameworkDbContext>(options => options.UseSqlServer(@Configuration.ConnectionString), ServiceLifetime.Singleton);
+            serviceCollection.AddDbContext<EntityFrameworkDbContext>(options => options.UseSqlServer(@Configuration.ConnectionString));
             //Configuration.ConnectionString kullanılarak appsettings.jsondaki connections string çağırılıyor. 
             //Yani connections stringi el ile yazmaktansa daha dinamik hale getirdik.
 
 
-            serviceCollection.AddSingleton<ICustomerReadRepository, CustomerReadRepository>();
-            serviceCollection.AddSingleton<ICustomerWriteRepository, CustomerWriteRepository>();
+            serviceCollection.AddScoped<ICustomerReadRepository, CustomerReadRepository>();
+            serviceCollection.AddScoped<ICustomerWriteRepository, CustomerWriteRepository>();
             
-            serviceCollection.AddSingleton<IOrderReadRepository, OrderReadRepository>();
-            serviceCollection.AddSingleton<IOrderWriteRepository,OrderWriteRepository>();
+            serviceCollection.AddScoped<IOrderReadRepository, OrderReadRepository>();
+            serviceCollection.AddScoped<IOrderWriteRepository,OrderWriteRepository>();
 
-            serviceCollection.AddSingleton<IProductReadRepository,ProductReadRepository>();
-            serviceCollection.AddSingleton<IProductWriteRepository,ProductWriteRepository>();
+            serviceCollection.AddScoped<IProductReadRepository,ProductReadRepository>();
+            serviceCollection.AddScoped<IProductWriteRepository,ProductWriteRepository>();
 
 
 

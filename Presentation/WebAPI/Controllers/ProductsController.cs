@@ -1,4 +1,5 @@
 ﻿using Application.Repositories.EntityRepository.ProductRepository;
+using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        public async void Get()
+        public async Task Get()
         {
             await _productWriteRepository.AddRangeAsync(new()
             {
@@ -29,5 +30,15 @@ namespace WebAPI.Controllers
             });
             await _productWriteRepository.SaveAsync();
         }//Deneme Nesneleri
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            return Ok(await _productReadRepository.GetByIdAsync(id));
+            //Product product = await _productReadRepository.GetByIdAsync(id);
+            //return Ok(product);
+            //İkisi aynı şey. İlkinde direkt herhangi bire atama yapmadan gönderdik
+        }
+    
     }
 }
