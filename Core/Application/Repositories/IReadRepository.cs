@@ -10,10 +10,10 @@ namespace Application.Repositories
 {
     public interface IReadRepository<T> : IRepository<T> where T : BaseEntity
     {
-        IQueryable<T> GetAll();
-        IQueryable<T> GetWhere(Expression<Func<T, bool>>method);//Şarta uygun olan birden fazla veri
-        Task<T> GetSingleAsync(Expression<Func<T, bool>> method);////Şarta uygun olan tek veri
-        Task<T> GetByIdAsync(int id);
+        IQueryable<T> GetAll(bool tracking = true);
+        IQueryable<T> GetWhere(Expression<Func<T, bool>>method, bool tracking = true);//Şarta uygun olan birden fazla veri
+        Task<T> GetSingleAsync(Expression<Func<T, bool>> method, bool tracking = true);////Şarta uygun olan tek veri
+        Task<T> GetByIdAsync(int id, bool tracking = true);
 
     }
 }

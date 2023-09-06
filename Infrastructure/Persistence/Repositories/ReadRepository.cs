@@ -22,29 +22,42 @@ namespace Persistence.Repositories
 
         public DbSet<T> Table => _context.Set<T>(); //Buradaki Tableyi tüm tablo olarak düşünebiliriz
 
-        public IQueryable<T> GetAll()
+        public IQueryable<T> GetAll(bool tracking = true)
         {
-            return Table;
+            var query = Table.AsQueryable();
+            if (!tracking)//tracking false ise AsNoTracking ile takip yapma
+                query = query.AsNoTracking();
+            return query;
         }
 
         //public IQueryable<T> GetAll()
         // => Table
         //Üstteki ile bu aynı şey
 
-        public IQueryable<T> GetWhere(Expression<Func<T, bool>> method)
+        public IQueryable<T> GetWhere(Expression<Func<T, bool>> method, bool tracking = true)
         {
-            return Table.Where(method);
+            var query = Table.Where(method);
+            if (!tracking)
+                query = query.AsNoTracking();
+            return query;
         }
 
-        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> method)
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> method, bool tracking = true)
         {
-            return await Table.FirstOrDefaultAsync(method);
+            var query = Table.AsQueryable();
+            if (!tracking)
+                query = query.AsNoTracking();
+            return await query.FirstOrDefaultAsync(method);
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(int id, bool tracking = true)
         {
             //return await Table.FirstOrDefaultAsync(data => data.Id == id);
-            return await Table.FindAsync(id);
+            //return await Table.FindAsync(id);
+            var query = Table.AsQueryable();
+            if (!tracking)
+                query = query.AsNoTracking();
+            return await query.FirstOrDefaultAsync(data => data.Id == id);
         }
     }
 }
