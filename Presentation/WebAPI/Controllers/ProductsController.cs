@@ -23,10 +23,10 @@ namespace WebAPI.Controllers
         {
             await _productWriteRepository.AddRangeAsync(new()
                 {
-                    new() {  Name="Product 1", Price = 100 , CreateDate = DateTime.Now, Stock = 1},
-                    new() {  Name="Product 2", Price = 10 , CreateDate = DateTime.Now, Stock = 10},
-                    new() {  Name="Product 3", Price = 130 , CreateDate = DateTime.Now, Stock = 132},
-                    new() {  Name="Product 4", Price = 5660 , CreateDate = DateTime.Now, Stock = 4}
+                    new() {  Name="Product 11", Price = 100.0 , Stock = 1},
+                    new() {  Name="Product 12", Price = 10.0 , Stock = 10},
+                    new() {  Name="Product 13", Price = 130.0 , Stock = 132},
+                    new() {  Name="Product 14", Price = 5660.0 , Stock = 4}
                 });//Deneme Nesneleri
             await _productWriteRepository.SaveAsync();
 
