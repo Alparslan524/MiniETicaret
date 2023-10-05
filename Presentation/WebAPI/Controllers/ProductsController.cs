@@ -1,4 +1,5 @@
 ﻿using Application.Repositories.EntityRepository.ProductRepository;
+using Application.RequestParameters;
 using Application.ViewModels.Products;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -21,11 +22,28 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery]Pagination pagination)
         {
-            return Ok(_productReadRepository.GetAll(false));
             //Kullanıcıya sadece veri gönderdiğimiz için bunların Tracking havuzuna girmesine gerek yok ve bu yüzden track değeri false
             //Kullanıcıya veri sunacağımız zaman veritabanında herhangi bir değişiklik yapmayacağımız için false olarak kullanabiliriz.
+
+            var totalCount = _productReadRepository.GetAll(false).Count();
+            var products = _productReadRepository.GetAll(false).Select(p => new
+            {//Cliente sadece bu verileri göndericez.
+                p.Id,
+                p.Name,
+                p.Stock,
+                p.Price,
+                p.CreateDate,
+                p.UpdatedDate
+            }).Skip(pagination.Page * pagination.Size).Take(pagination.Size);
+            //page 3 size 10 olsun. 30 tanesini atla 10 tane getir. Yani sayfalama işlemi
+            return Ok(new
+            {
+                totalCount, 
+                products
+            });
+            
         }
 
         [HttpGet("{id}")]
