@@ -117,7 +117,7 @@ namespace Infrastructure.Services
                 string fileNewName = await FileRenameAsync(uploadPath, file.FileName);//Dosya ismini değiştir
 
                 bool result = await CopyFileAsync($"{uploadPath}\\{fileNewName}", file);//Dosyayı kaydet(?)
-                datas.Add((fileNewName, $"{uploadPath}\\{fileNewName}"));
+                datas.Add((fileNewName, $"{filePath}\\{fileNewName}"));
                 results.Add(result);
             }
             if (results.TrueForAll(r => r.Equals(true)))
