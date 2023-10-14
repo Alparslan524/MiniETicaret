@@ -12,6 +12,7 @@ namespace Domain.Entities.File
     {
         public string FileName { get; set; }
         public string Path { get; set; }
+        public string Storage { get; set; }
 
 
         [NotMapped]//Yani bu field olmayacak, ama BaseEntity'nin diğer fieldleri olacak

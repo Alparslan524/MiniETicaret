@@ -17,4 +17,9 @@
     <ProjectReference Include="..\..\Core\Application\Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\Storage\AWS\" />
+    <Folder Include="Services\Storage\Azure\" />
+  </ItemGroup>
+
 </Project>

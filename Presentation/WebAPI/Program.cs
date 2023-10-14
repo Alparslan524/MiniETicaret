@@ -1,7 +1,9 @@
 using Application.Validators.Products;
 using FluentValidation.AspNetCore;
 using Infrastructure;
+using Infrastructure.Enums;
 using Infrastructure.Filters;
+using Infrastructure.Services.Storage.Local;
 using Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPersistenceServices();
 
 builder.Services.AddInfrastructureServices();
+
+builder.Services.AddStorageWithEnums(StorageType.Local);
+//builder.Services.AddStorage<LocalStorage>();
+
 
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
 policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod()
