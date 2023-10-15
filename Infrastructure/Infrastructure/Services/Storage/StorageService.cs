@@ -8,6 +8,14 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Services.Storage
 {
+    //Kullanılacak teknolojiler IStorage'den implemente alıcak(ILocalStorage,IAzureStogare vs)
+    //IStorageService de IStorageden implemente alıcak. StorageService de IStorageServiceden implemente alıcak.
+    //StorageService'de yani burda IStorage metotları kullanılacak. Aslında ServiceRegistrationda belirttiğimiz teknolojinin yani
+    //misal LocalStorage metodları çalışacak. Çünkü ServiceRegistrationda şöyle dedik => IStorage isteyen olursa
+    //program.cs deki generic yapıya verileni ver. 
+    //Misal şu an program.cs de şu yazılı => builder.Services.AddStorage<LocalStorage>();
+    //Bu yüzden StorageService kullanıldığı zaman _storage.DeleteAsync metodu aslında LocalStoragede yazdığımız DeleteAsync metoduna denk geliyor.
+    //Biz Teknolojiyi değiştirmek istediğimizde ise sadece LocalStorage yerine AzureStorage yazıcak ve bitecek
     public class StorageService : IStorageService
     {
         readonly IStorage _storage;
