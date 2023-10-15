@@ -1,9 +1,8 @@
 using Application.Validators.Products;
 using FluentValidation.AspNetCore;
 using Infrastructure;
-using Infrastructure.Enums;
 using Infrastructure.Filters;
-using Infrastructure.Services.Storage.Local;
+using Infrastructure.Services.Storage.Azure;
 using Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +12,8 @@ builder.Services.AddPersistenceServices();
 
 builder.Services.AddInfrastructureServices();
 
-builder.Services.AddStorageWithEnums(StorageType.Local);
-//builder.Services.AddStorage<LocalStorage>();
+//builder.Services.AddStorageWithEnums(StorageType.Local);
+builder.Services.AddStorage<AzureStorage>();
 
 
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>

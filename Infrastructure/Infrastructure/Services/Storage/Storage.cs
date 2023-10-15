@@ -1,18 +1,21 @@
 ﻿using Infrastructure.Operations;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Services.Storage
 {
-    public class FileService
+    public class Storage
     {
-        private async Task<string> FileRenameAsync(string path, string fileName, bool first = true)
+        //Rename metodunu IStorage interfacesinde tanımlayabilirdik.
+        //Fakat bu sefer her teknolojinin Storagesinde (AzureStorage,localStorage vs) bu rename algoritmasının kodunu yazmamız gerekicekti.
+        //Bu yüzden base Storage oluşturduk ve her storage için ortak olan metodlar, kodlar burda yer alacak.
+
+        protected delegate bool HasFile(string pathOrContainerName, string fileName);
+
+        protected async Task<string> FileRenameAsync(string pathOrContainerName, string fileName, HasFile hasFileMethod, bool first = true)
         {
             string newFileName = await Task.Run<string>(async () =>
             {
@@ -64,9 +67,10 @@ namespace Infrastructure.Services
                     }
                 }
 
-                if (File.Exists($"{path}\\{newFileName}"))
+                //if (File.Exists($"{path}\\{newFileName}"))
+                if (hasFileMethod(pathOrContainerName, newFileName))
                 {
-                    return await FileRenameAsync(path, newFileName, false);
+                    return await FileRenameAsync(pathOrContainerName, newFileName, hasFileMethod, false);
                 }
                 else
                 {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Services.Storage.Local
 {
-    public class LocalStorage : ILocalStorage
+    public class LocalStorage : Storage, ILocalStorage
     {
         readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -63,8 +63,10 @@ namespace Infrastructure.Services.Storage.Local
 
             foreach (IFormFile file in files)
             {
-                await CopyFileAsync($"{uploadPath}\\{file.FileName}", file);//Dosyayı kaydet(?)
-                datas.Add((file.FileName, $"{path}\\{file.FileName}"));
+                string fileNewName = await FileRenameAsync(path, file.FileName, HasFile);
+
+                await CopyFileAsync($"{uploadPath}\\{fileNewName}", file);//Dosyayı kaydet(?)
+                datas.Add((fileNewName, $"{path}\\{fileNewName}"));
             }
 
             return datas;
