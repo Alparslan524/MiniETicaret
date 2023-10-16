@@ -12,7 +12,7 @@ builder.Services.AddPersistenceServices();
 
 builder.Services.AddInfrastructureServices();
 
-//builder.Services.AddStorageWithEnums(StorageType.Local);
+//builder.Services.AddStorageWithEnums(StorageType.Local);//Switch-case yerine generic yapý daha doðru
 builder.Services.AddStorage<AzureStorage>();
 
 
