@@ -1,6 +1,12 @@
 ﻿using Application.Abstractions.Storage;
-using Application.Features.Commands.CreateProduct;
-using Application.Features.Queries.GetAllProduct;
+using Application.Features.Commands.Product.CreateProduct;
+using Application.Features.Commands.Product.DeleteProduct;
+using Application.Features.Commands.Product.UpdateProduct;
+using Application.Features.Commands.ProductImageFile.DeleteProductImage;
+using Application.Features.Commands.ProductImageFile.UploadProductImage;
+using Application.Features.Queries.Product.GetAllProduct;
+using Application.Features.Queries.Product.GetByIdProduct;
+using Application.Features.Queries.ProductImageFile.GetProductImageFile;
 using Application.Repositories.EntityRepository.FileRepository;
 using Application.Repositories.EntityRepository.InvoiceImageFileRepository;
 using Application.Repositories.EntityRepository.ProductImageFileRepository;
@@ -60,135 +66,65 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetAllProductQueryRequest getAllProductQueryRequest)
+        public async Task<IActionResult> Get([FromQuery] GetAllProductQueryRequest request)
         {
             //GetAllProductQueryHandler : IRequestHandler<GetAllProductQueryRequest, GetAllProductQueryResponse> dediğimiz için 
             //getAllProductQueryRequest'in cevabı GetAllProductQueryResponse olduğunu biliyor.
-            GetAllProductQueryResponse response = await _mediator.Send(getAllProductQueryRequest);
+            GetAllProductQueryResponse response = await _mediator.Send(request);
             return Ok(response);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{id}")]//Burdaki id requestteki ile aynı olması lazım. [FromRoute] dememizin sebebi .../api/products/getbyid/123 dicez
+        public async Task<IActionResult> GetById([FromRoute] GetByIdProductQueryRequest request)
         {
-            return Ok(await _productReadRepository.GetByIdAsync(id, false));
+            GetByIdProductQueryResponse response = await _mediator.Send(request);
+            return Ok(response);
             //Product product = await _productReadRepository.GetByIdAsync(id);
             //return Ok(product);
             //İkisi aynı şey. İlkinde direkt herhangi bire atama yapmadan gönderdik
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(CreateProductCommandRequest createProductCommandRequest)
+        public async Task<IActionResult> Post(CreateProductCommandRequest request)
         {
-            CreateProductCommandResponse response = await _mediator.Send(createProductCommandRequest);
+            CreateProductCommandResponse response = await _mediator.Send(request);
             return Ok(response);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(VM_Update_Product model)
+        public async Task<IActionResult> Put([FromBody] UpdateProductCommandRequest request)
         {
-            Product product = await _productReadRepository.GetByIdAsync(model.Id);
-            product.Name = model.Name;
-            product.Price = model.Price;
-            product.Stock = model.Stock;
-            await _productWriteRepository.SaveAsync();
+            UpdateProductCommandResponse response = await _mediator.Send(request);
             return Ok();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromRoute] DeleteProductCommandRequest request)
         {
-            await _productWriteRepository.RemoveAsync(id);
-            await _productWriteRepository.SaveAsync();
+            DeleteProductCommandResponse response = await _mediator.Send(request);
             return Ok();
         }
 
         [HttpPost("[action]")]//products?id=8 gibi(action dediğimiz için clientte actionu bildirmemiz lazım)
-        public async Task<IActionResult> Upload(int id)
+        public async Task<IActionResult> Upload([FromQuery, FromBody] UploadProductImageCommandRequest request)
         {
-
-            List<(string fileName, string pathOrContainerName)> results =
-                await _storageService.UploadAsync("photo-images", Request.Form.Files);
-
-            Product product = await _productReadRepository.GetByIdAsync(id);
-
-            await _productImageFileWriteRepository.AddRangeAsync(results.Select(r => new ProductImageFile
-            {
-                FileName = r.fileName,
-                Path = r.pathOrContainerName,
-                Storage = _storageService.StorageName,
-                Product = new List<Product>() { product }
-            }).ToList());
-
-            await _productImageFileWriteRepository.SaveAsync();
-
+            request.Files = Request.Form.Files;//?? anlamadım. Ama galiba şey => Queryden gelen files'i requesttekine atadık.
+            UploadProductImageCommandResponse response = await _mediator.Send(request);
             return Ok();
-
-
-            //var datas = await _storageService.UploadAsync("files", Request.Form.Files);
-
-            //await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d => new ProductImageFile()
-            //{
-            //    FileName = d.fileName,
-            //    Path = d.pathOrContainerName,
-            //    Storage = _storageService.StorageName
-            //}).ToList());
-            //await _productImageFileWriteRepository.SaveAsync();
-
-            //return Ok();
-
-
-            //wwwroot/resource/product-images
-            //var datas = await _fileService.UploadAsync("resource/files", Request.Form.Files);
-
-            //await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d => new ProductImageFile()
-            //{
-            //    FileName = d.fileName,
-            //    Path = d.path
-            //}).ToList());
-            //await _productImageFileWriteRepository.SaveAsync();
-
-            //await _ınvoiceImageFileWriteRepository.AddRangeAsync(datas.Select(d => new InvoiceImageFile()
-            //{
-            //    FileName = d.fileName,
-            //    Path = d.path,
-            //    Price = 500
-            //}).ToList());
-            //await _ınvoiceImageFileWriteRepository.SaveAsync();
-
-            //await _fileWriteRepository.AddRangeAsync(datas.Select(d => new Domain.Entities.File.File()
-            //{
-            //    FileName = d.fileName,
-            //    Path = d.path
-            //}).ToList());
-            //await _fileWriteRepository.SaveAsync();
         }
 
         [HttpGet("[action]/{id}")]//products/8 gibi
-        public async Task<IActionResult> GetProductImages(int id)
+        public async Task<IActionResult> GetProductImages([FromRoute] GetProductImageQueryRequest request)
         {
-            Product? product = await _productReadRepository.Table.Include(p => p.ProductImageFiles)
-                .FirstOrDefaultAsync(p => p.Id == id);//Id'si 8 olan productın ProductImageFiles bilgilerini getirir.(action dediğimiz için clientte actionu bildirmemiz lazım)
-
-            return Ok(product.ProductImageFiles.Select(p => new
-            {
-                Path = $"{_configuration["BaseStorageUrl"]}/{p.Path}",
-                p.FileName,
-                p.Id
-            }));
+            List<GetProductImageQueryResponse> response = await _mediator.Send(request);
+            return Ok(response);
         }
 
         [HttpDelete("[action]/{id}")]
-        public async Task<IActionResult> DeleteProductImage(int id, int imageId)
+        public async Task<IActionResult> DeleteProductImage([FromRoute] DeleteProductImageCommandRequest request, [FromQuery] int imageId)
         {
-            Product? product = await _productReadRepository.Table.Include(p => p.ProductImageFiles)
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            ProductImageFile productImageFile = product.ProductImageFiles.FirstOrDefault(p => p.Id == imageId);
-
-            product.ProductImageFiles.Remove(productImageFile);
-            await _productWriteRepository.SaveAsync();
-
+            request.imageId = imageId;
+            DeleteProductImageCommandResponse response = await _mediator.Send(request);
             return Ok();
         }
     }

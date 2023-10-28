@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Features.Queries.GetAllProduct
+namespace Application.Features.Queries.Product.GetAllProduct
 {//MediatR sayesinde IRequest implemente ediyoruz ve diyoruz ki bu GetAllProductQueryRequest'e karşılık dönülecek nesne GetAllProductQueryResponse 
     public class GetAllProductQueryRequest : IRequest<GetAllProductQueryResponse>
     {
