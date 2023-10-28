@@ -1,3 +1,4 @@
+using Application;
 using Application.Validators.Products;
 using FluentValidation.AspNetCore;
 using Infrastructure;
@@ -11,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPersistenceServices();
 
 builder.Services.AddInfrastructureServices();
+
+builder.Services.AddApplicationServices();
 
 //builder.Services.AddStorageWithEnums(StorageType.Local);//Switch-case yerine generic yapý daha doðru
 builder.Services.AddStorage<AzureStorage>();

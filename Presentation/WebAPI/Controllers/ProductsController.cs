@@ -1,4 +1,6 @@
 ﻿using Application.Abstractions.Storage;
+using Application.Features.Commands.CreateProduct;
+using Application.Features.Queries.GetAllProduct;
 using Application.Repositories.EntityRepository.FileRepository;
 using Application.Repositories.EntityRepository.InvoiceImageFileRepository;
 using Application.Repositories.EntityRepository.ProductImageFileRepository;
@@ -7,6 +9,7 @@ using Application.RequestParameters;
 using Application.ViewModels.Products;
 using Domain.Entities;
 using Domain.Entities.File;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,11 +38,12 @@ namespace WebAPI.Controllers
 
         readonly IConfiguration _configuration;
 
+        readonly IMediator _mediator;
 
 
 
 
-        public ProductsController(IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository, IWebHostEnvironment webHostEnvironment, IFileReadRepository fileReadRepository, IFileWriteRepository fileWriteRepository, IInvoiceImageFileReadRepository ınvoiceImageFileReadRepository, IInvoiceImageFileWriteRepository ınvoiceImageFileWriteRepository, IProductImageFileReadRepository productImageFileReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IStorageService storageService, IConfiguration configuration)
+        public ProductsController(IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository, IWebHostEnvironment webHostEnvironment, IFileReadRepository fileReadRepository, IFileWriteRepository fileWriteRepository, IInvoiceImageFileReadRepository ınvoiceImageFileReadRepository, IInvoiceImageFileWriteRepository ınvoiceImageFileWriteRepository, IProductImageFileReadRepository productImageFileReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IStorageService storageService, IConfiguration configuration, IMediator mediator)
         {
             _productReadRepository = productReadRepository;
             _productWriteRepository = productWriteRepository;
@@ -52,31 +56,16 @@ namespace WebAPI.Controllers
             _productImageFileWriteRepository = productImageFileWriteRepository;
             _storageService = storageService;
             _configuration = configuration;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] Pagination pagination)
+        public async Task<IActionResult> Get([FromQuery] GetAllProductQueryRequest getAllProductQueryRequest)
         {
-            //Kullanıcıya sadece veri gönderdiğimiz için bunların Tracking havuzuna girmesine gerek yok ve bu yüzden track değeri false
-            //Kullanıcıya veri sunacağımız zaman veritabanında herhangi bir değişiklik yapmayacağımız için false olarak kullanabiliriz.
-
-            var totalCount = _productReadRepository.GetAll(false).Count();
-            var products = _productReadRepository.GetAll(false).Select(p => new
-            {//Cliente sadece bu verileri göndericez.
-                p.Id,
-                p.Name,
-                p.Stock,
-                p.Price,
-                p.CreateDate,
-                p.UpdatedDate
-            }).Skip(pagination.Page * pagination.Size).Take(pagination.Size);
-            //page 3 size 10 olsun. 30 tanesini atla 10 tane getir. Yani sayfalama işlemi
-            return Ok(new
-            {
-                totalCount,
-                products
-            });
-
+            //GetAllProductQueryHandler : IRequestHandler<GetAllProductQueryRequest, GetAllProductQueryResponse> dediğimiz için 
+            //getAllProductQueryRequest'in cevabı GetAllProductQueryResponse olduğunu biliyor.
+            GetAllProductQueryResponse response = await _mediator.Send(getAllProductQueryRequest);
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
@@ -89,17 +78,10 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(VM_Create_Product model)
+        public async Task<IActionResult> Post(CreateProductCommandRequest createProductCommandRequest)
         {
-            await _productWriteRepository.AddAsync(new()
-            {
-                Name = model.Name,
-                Price = model.Price,
-                Stock = model.Stock
-            });
-            await _productWriteRepository.SaveAsync();
-            return Ok((int)HttpStatusCode.Created);
-            //HttpStatusCode enumu üzerinden created kodunu inte çevirip gönderiyor
+            CreateProductCommandResponse response = await _mediator.Send(createProductCommandRequest);
+            return Ok(response);
         }
 
         [HttpPut]
