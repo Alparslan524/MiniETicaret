@@ -1,6 +1,8 @@
 ﻿using Domain.Entities;
 using Domain.Entities.Common;
 using Domain.Entities.File;
+using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Persistence.Contexts
 {
-    public class EntityFrameworkDbContext : DbContext
+    public class EntityFrameworkDbContext : IdentityDbContext<AppUser,AppRole,string>
     {
         public EntityFrameworkDbContext(DbContextOptions options) : base(options) { }
 

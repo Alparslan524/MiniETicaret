@@ -6,6 +6,7 @@ using Application.Repositories.EntityRepository.InvoiceImageFileRepository;
 using Application.Repositories.EntityRepository.OrderRepository;
 using Application.Repositories.EntityRepository.ProductImageFileRepository;
 using Application.Repositories.EntityRepository.ProductRepository;
+using Domain.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Contexts;
@@ -32,6 +33,14 @@ namespace Persistence
             //Configuration.ConnectionString kullanılarak appsettings.jsondaki connections string çağırılıyor. 
             //Yani connections stringi el ile yazmaktansa daha dinamik hale getirdik.
 
+            serviceCollection.AddIdentity<AppUser, AppRole>(options =>
+            {
+                options.Password.RequiredLength = 3;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+            }).AddEntityFrameworkStores<EntityFrameworkDbContext>();
 
             serviceCollection.AddScoped<ICustomerReadRepository, CustomerReadRepository>();
             serviceCollection.AddScoped<ICustomerWriteRepository, CustomerWriteRepository>();
