@@ -1,4 +1,6 @@
-﻿using Application.Exceptions;
+﻿using Application.Abstractions.Token;
+using Application.DTOs;
+using Application.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -14,11 +16,13 @@ namespace Application.Features.Commands.AppUser.LoginUser
     {
         readonly UserManager<AppUsers> _userManager;
         readonly SignInManager<AppUsers> _signInManager;
+        readonly ITokenHandler _tokenHandler;
 
-        public LoginUserCommandHandler(UserManager<AppUsers> userManager, SignInManager<AppUsers> signInManager)
+        public LoginUserCommandHandler(UserManager<AppUsers> userManager, SignInManager<AppUsers> signInManager, ITokenHandler tokenHandler)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _tokenHandler = tokenHandler;
         }
 
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
@@ -28,15 +32,20 @@ namespace Application.Features.Commands.AppUser.LoginUser
                 user = await _userManager.FindByEmailAsync(request.userNameorEmail);
 
             if (user == null)
-                throw new NotFoundUserException("Kullanıcı adı veya şifre hatalı...");
+                throw new NotFoundUserException();
 
             SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             if (result.Succeeded)
             {
-                //yetkiler belirlenecek
+                Token token = _tokenHandler.CreateAccessToken(5);
+                return new LoginUserSuccessCommandResponse()
+                {
+                    Token = token
+                };
             }
 
-            return new();
+            throw new AuthenticationErrorException();
+
         }
     }
 }

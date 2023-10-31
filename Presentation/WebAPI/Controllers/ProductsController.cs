@@ -16,6 +16,7 @@ using Application.ViewModels.Products;
 using Domain.Entities;
 using Domain.Entities.File;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes ="Admin")]
     public class ProductsController : ControllerBase
     {
         readonly IMediator _mediator;
