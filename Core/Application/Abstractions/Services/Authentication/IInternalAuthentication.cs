@@ -9,6 +9,7 @@ namespace Application.Abstractions.Services.Authentication
 {
     public interface IInternalAuthentication
     {
-        Task<DTOs.Token> LoginAsync(LoginUserRequest model,int accessTokenLifeTime);
+        Task<DTOs.Token> LoginAsync(LoginUserRequest model, int accessTokenLifeTime);
+        Task<DTOs.Token> RefreshTokenLoginAsync(string refreshToken);
     }
 }

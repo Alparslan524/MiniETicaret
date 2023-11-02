@@ -9,6 +9,7 @@ namespace Application.Abstractions.Token
 {
     public interface ITokenHandler
     {
-        TOKENs CreateAccessToken(int minute);
+        TOKENs CreateAccessToken(int second);
+        string CreateRefreshToken();
     }
 }
