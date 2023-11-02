@@ -1,4 +1,6 @@
-﻿using Domain.Entities.Identity;
+﻿using Application.Abstractions.Services;
+using Application.DTOs.User;
+using Domain.Entities.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -12,34 +14,30 @@ namespace Application.Features.Commands.AppUser.CreateUser
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
     {
-        readonly UserManager<AppUserS> _userManager;//Identity mekanizması içinde hazır gelen service. Bu yüzden repository vs oluşturmadık.
+        readonly IUserService _userService;
 
-        public CreateUserCommandHandler(UserManager<AppUserS> userManager)
+        public CreateUserCommandHandler(IUserService userService)
         {
-            _userManager = userManager;
+            _userService = userService;
         }
 
         public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request, CancellationToken cancellationToken)
         {
-            IdentityResult result = await _userManager.CreateAsync(new()
+
+            CreateUserResponse response = await _userService.CreateAsync(new()
             {
-                Id = Guid.NewGuid().ToString(),
-                UserName = request.UserName,
-                Email = request.Email,
-                NameSurname = request.NameSurname,
-            }, request.Password);
+                Email = request.Email,//Burada CreateUserCommandRequest'i CreateAsync'nin istediği tipe yani CreateUser'e (DTO) dönüştürüyoruz
+                NameSurname = request.NameSurname,//ve servise öyle gönderiyoruz. 
+                Password = request.Password,
+                PasswordAgain = request.PasswordAgain,
+                UserName = request.UserName
+            });//Bize geriye CreateUserResponse (DTO) dönüyor. 
 
-            CreateUserCommandResponse response = new() { Succeeded = result.Succeeded };
-
-            if (result.Succeeded)
-                response.Message = "Kullanıcı başarıyla oluşturulmuştur";
-            else
-                foreach (var error in result.Errors)
-                    response.Message += $"{error.Code}-{error.Description}\n";
-
-            return response;
-
-            //throw new UserCreateFailedException(); Bunu ilerleyen zamanda yapcaz
+            return new()//Burada CreateUserResponse'yi geri dönüş tipimiz olan CreateUserCommandResponse'ye çeviriyoruz.
+            {
+                Message = response.Message,
+                Succeeded = response.Succeeded
+            };//(Bu şekilde dtodan CQRS request-response'sine eçvirmemizin nedeni DTO lar katmanlar arası entity taşımaya yarıyor.)
         }
     }
 }

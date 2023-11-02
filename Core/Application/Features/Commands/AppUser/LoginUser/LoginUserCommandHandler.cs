@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.Token;
+﻿using Application.Abstractions.Services.Authentication;
+using Application.Abstractions.Token;
 using Application.DTOs;
 using Application.Exceptions;
 using MediatR;
@@ -14,38 +15,24 @@ namespace Application.Features.Commands.AppUser.LoginUser
 {
     public class LoginUserCommandHandler : IRequestHandler<LoginUserCommandRequest, LoginUserCommandResponse>
     {
-        readonly UserManager<AppUsers> _userManager;
-        readonly SignInManager<AppUsers> _signInManager;
-        readonly ITokenHandler _tokenHandler;
+        readonly IInternalAuthentication _authService;
 
-        public LoginUserCommandHandler(UserManager<AppUsers> userManager, SignInManager<AppUsers> signInManager, ITokenHandler tokenHandler)
+        public LoginUserCommandHandler(IInternalAuthentication authService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _tokenHandler = tokenHandler;
+            _authService = authService;
         }
 
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
         {
-            AppUsers user = await _userManager.FindByNameAsync(request.userNameorEmail);
-            if (user == null)
-                user = await _userManager.FindByEmailAsync(request.userNameorEmail);
-
-            if (user == null)
-                throw new NotFoundUserException();
-
-            SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
-            if (result.Succeeded)
+            var token = await _authService.LoginAsync(new()
             {
-                Token token = _tokenHandler.CreateAccessToken(5);
-                return new LoginUserSuccessCommandResponse()
-                {
-                    Token = token
-                };
-            }
-
-            throw new AuthenticationErrorException();
-
+                userNameorEmail = request.userNameorEmail,
+                Password = request.Password
+            }, 15);
+            return new LoginUserSuccessCommandResponse()
+            {
+                Token = token
+            };
         }
     }
 }

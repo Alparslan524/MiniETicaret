@@ -1,4 +1,6 @@
-﻿using Application.Repositories;
+﻿using Application.Abstractions.Services;
+using Application.Abstractions.Services.Authentication;
+using Application.Repositories;
 using Application.Repositories.Entity_Repository.CustomerRepository;
 using Application.Repositories.EntityRepository.CustomerRepository;
 using Application.Repositories.EntityRepository.FileRepository;
@@ -16,6 +18,7 @@ using Persistence.Repositories.EntityRepository.InvoiceImageFileRepository;
 using Persistence.Repositories.EntityRepository.OrderRepository;
 using Persistence.Repositories.EntityRepository.ProductImageFileRepository;
 using Persistence.Repositories.EntityRepository.ProductRepository;
+using Persistence.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,6 +62,11 @@ namespace Persistence
 
             serviceCollection.AddScoped<IProductImageFileReadRepository, ProductImageFileReadRepository>();
             serviceCollection.AddScoped<IProductImageFileWriteRepository, ProductImageFileWriteRepository>();
+
+            serviceCollection.AddScoped<IUserService, UserService>();
+            serviceCollection.AddScoped<IAuthService, AuthService>();
+            serviceCollection.AddScoped<IExternalAuthentication, AuthService>();
+            serviceCollection.AddScoped<IInternalAuthentication, AuthService>();
 
         }
     }
