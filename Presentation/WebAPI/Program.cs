@@ -18,6 +18,7 @@ using System.Security.Claims;
 using Persistence.Contexts;
 using Serilog.Context;
 using Microsoft.AspNetCore.HttpLogging;
+using WebAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -116,6 +117,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.ConfigureExceptionHandler<Program>(app.Services.GetRequiredService<ILogger<Program>>());
 
 app.UseStaticFiles();
 
