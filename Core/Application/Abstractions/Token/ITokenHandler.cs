@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Entities.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace Application.Abstractions.Token
 {
     public interface ITokenHandler
     {
-        TOKENs CreateAccessToken(int second);
+        TOKENs CreateAccessToken(int second, AppUser appUser);
         string CreateRefreshToken();
     }
 }
