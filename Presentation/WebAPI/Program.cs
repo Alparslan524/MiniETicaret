@@ -19,6 +19,8 @@ using Persistence.Contexts;
 using Serilog.Context;
 using Microsoft.AspNetCore.HttpLogging;
 using WebAPI.Extensions;
+using SignalR;
+using SignalR.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,9 +34,10 @@ builder.Services.AddApplicationServices();
 //builder.Services.AddStorageWithEnums(StorageType.Local);//Switch-case yerine generic yapý daha doðru
 builder.Services.AddStorage<AzureStorage>();
 
+builder.Services.AddSignalRServices();
 
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
-policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod()
+policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials()
 ));
 
 builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
@@ -139,5 +142,7 @@ app.Use(async (EntityFrameworkDbContext, next) =>
 });
 
 app.MapControllers();
+app.MapHubs();
+
 
 app.Run();
