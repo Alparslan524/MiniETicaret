@@ -8,6 +8,7 @@ namespace Domain.Entities.File
 {
     public class ProductImageFile : File
     {
+        public bool Showcase { get; set; }
         public ICollection<Product> Product { get; set; }
     }
 }
