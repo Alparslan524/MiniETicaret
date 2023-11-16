@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.Storage;
+﻿using Application.Abstractions.Services;
+using Application.Abstractions.Storage;
 using Application.Abstractions.Token;
 using Infrastructure.Enums;
 using Infrastructure.Services;
@@ -21,6 +22,7 @@ namespace Infrastructure
         {
             serviceCollection.AddScoped<IStorageService, StorageService>();
             serviceCollection.AddScoped<ITokenHandler, TokenHandler>();
+            serviceCollection.AddScoped<IMailService, MailService>();
         }
 
         //Bu daha doğru kullanım. Çünkü generic yapıda bağımlılık yok.
