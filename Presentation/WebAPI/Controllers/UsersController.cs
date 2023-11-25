@@ -2,6 +2,7 @@
 using Application.Features.Commands.AppUser.CreateUser;
 using Application.Features.Commands.AppUser.GoogleLoginUser;
 using Application.Features.Commands.AppUser.LoginUser;
+using Application.Features.Commands.AppUser.UpdatePassword;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,10 +29,10 @@ namespace WebAPI.Controllers
             return Ok(response);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> ExampleMailTest()
+        [HttpPost("update-password")]
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordCommandRequest request)
         {
-            await _mailService.SendMessageAsync("headshoot1172@gmail.com", "Örnek Mail", "<strong>Bu bir örnek maildir.</strong>");
+            UpdatePasswordCommandResponse response = await _mediator.Send(request);
             return Ok();
         }
     }
