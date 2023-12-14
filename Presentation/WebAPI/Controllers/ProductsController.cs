@@ -1,4 +1,7 @@
 ﻿using Application.Abstractions.Storage;
+using Application.Consts;
+using Application.CustomAttributes;
+using Application.Enums;
 using Application.Features.Commands.Product.CreateProduct;
 using Application.Features.Commands.Product.DeleteProduct;
 using Application.Features.Commands.Product.UpdateProduct;
@@ -57,6 +60,7 @@ namespace WebAPI.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Admin")]
+        [AuthorizeDefinition(Menu = AuthorizeDefinitionConstants.Products, ActionType = ActionType.Writing, Definition = "Create Product")]
         public async Task<IActionResult> Post(CreateProductCommandRequest request)
         {
             CreateProductCommandResponse response = await _mediator.Send(request);
@@ -65,6 +69,7 @@ namespace WebAPI.Controllers
 
         [HttpPut]
         [Authorize(AuthenticationSchemes = "Admin")]
+        [AuthorizeDefinition(Menu = AuthorizeDefinitionConstants.Products, ActionType = ActionType.Updating, Definition = "Update Product")]
         public async Task<IActionResult> Put([FromBody] UpdateProductCommandRequest request)
         {
             UpdateProductCommandResponse response = await _mediator.Send(request);
@@ -73,6 +78,7 @@ namespace WebAPI.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = "Admin")]
+        [AuthorizeDefinition(Menu = AuthorizeDefinitionConstants.Products, ActionType = ActionType.Deleting, Definition = "Delete Product")]
         public async Task<IActionResult> Delete([FromRoute] DeleteProductCommandRequest request)
         {
             DeleteProductCommandResponse response = await _mediator.Send(request);
@@ -81,6 +87,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("[action]")]//products?id=8 gibi(action dediğimiz için clientte actionu bildirmemiz lazım)
         [Authorize(AuthenticationSchemes = "Admin")]
+        [AuthorizeDefinition(Menu = AuthorizeDefinitionConstants.Products, ActionType = ActionType.Writing, Definition = "Upload Product File")]
         public async Task<IActionResult> Upload([FromQuery, FromBody] UploadProductImageCommandRequest request)
         {
             request.Files = Request.Form.Files;//?? anlamadım. Ama galiba şey => Queryden gelen files'i requesttekine atadık.
@@ -90,6 +97,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("[action]/{id}")]//products/8 gibi
         [Authorize(AuthenticationSchemes = "Admin")]
+        [AuthorizeDefinition(Menu = AuthorizeDefinitionConstants.Products, ActionType = ActionType.Reading, Definition = "Get Product Image")]
         public async Task<IActionResult> GetProductImages([FromRoute] GetProductImageQueryRequest request)
         {
             List<GetProductImageQueryResponse> response = await _mediator.Send(request);
@@ -98,6 +106,7 @@ namespace WebAPI.Controllers
 
         [HttpDelete("[action]/{id}")]
         [Authorize(AuthenticationSchemes = "Admin")]
+        [AuthorizeDefinition(Menu = AuthorizeDefinitionConstants.Products, ActionType = ActionType.Deleting, Definition = "Delete Product Image")]
         public async Task<IActionResult> DeleteProductImage([FromRoute] DeleteProductImageCommandRequest request, [FromQuery] int imageId)
         {
             request.imageId = imageId;
@@ -107,6 +116,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("[action]")]
         [Authorize(AuthenticationSchemes = "Admin")]
+        [AuthorizeDefinition(Menu = AuthorizeDefinitionConstants.Products, ActionType = ActionType.Updating, Definition = "Change Showcase Image")]
         public async Task<IActionResult> ChangeShowcaseImage([FromQuery] ChangeShowcaseImageCommandRequest request)
         {
             ChangeShowcaseImageCommandResponse response = await _mediator.Send(request);
