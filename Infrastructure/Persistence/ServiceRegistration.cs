@@ -70,6 +70,8 @@ namespace Persistence
             serviceCollection.AddScoped<IExternalAuthentication, AuthService>();
             serviceCollection.AddScoped<IInternalAuthentication, AuthService>();
 
+            serviceCollection.AddScoped<IRoleService, RoleService>();
+
         }
     }
 }
