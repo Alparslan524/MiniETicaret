@@ -3,8 +3,10 @@ using Application.Abstractions.Services.Authentication;
 using Application.Repositories;
 using Application.Repositories.Entity_Repository.CustomerRepository;
 using Application.Repositories.EntityRepository.CustomerRepository;
+using Application.Repositories.EntityRepository.EndpointRepository;
 using Application.Repositories.EntityRepository.FileRepository;
 using Application.Repositories.EntityRepository.InvoiceImageFileRepository;
+using Application.Repositories.EntityRepository.MenuRepository;
 using Application.Repositories.EntityRepository.OrderRepository;
 using Application.Repositories.EntityRepository.ProductImageFileRepository;
 using Application.Repositories.EntityRepository.ProductRepository;
@@ -14,8 +16,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Contexts;
 using Persistence.Repositories.EntityRepository.CustomerRepository;
+using Persistence.Repositories.EntityRepository.EndpointRepository;
 using Persistence.Repositories.EntityRepository.FileRepository;
 using Persistence.Repositories.EntityRepository.InvoiceImageFileRepository;
+using Persistence.Repositories.EntityRepository.MenuRepository;
 using Persistence.Repositories.EntityRepository.OrderRepository;
 using Persistence.Repositories.EntityRepository.ProductImageFileRepository;
 using Persistence.Repositories.EntityRepository.ProductRepository;
@@ -65,12 +69,21 @@ namespace Persistence
             serviceCollection.AddScoped<IProductImageFileReadRepository, ProductImageFileReadRepository>();
             serviceCollection.AddScoped<IProductImageFileWriteRepository, ProductImageFileWriteRepository>();
 
+            serviceCollection.AddScoped<IEndpointReadRepository, EndpointReadRepository>();
+            serviceCollection.AddScoped<IEndpointWriteRepository, EndpointWriteRepository>();
+
+            serviceCollection.AddScoped<IMenuReadRepository, MenuReadRepository>();
+            serviceCollection.AddScoped<IMenuWriteRepository, MenuWriteRepository>();
+
             serviceCollection.AddScoped<IUserService, UserService>();
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IExternalAuthentication, AuthService>();
             serviceCollection.AddScoped<IInternalAuthentication, AuthService>();
 
             serviceCollection.AddScoped<IRoleService, RoleService>();
+
+            serviceCollection.AddScoped<IAuthorizationEndpointService, AuthorizationEndpointService>();
+
 
         }
     }

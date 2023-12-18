@@ -7,12 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Persistence.Contexts
 {
-    public class EntityFrameworkDbContext : IdentityDbContext<AppUser,AppRole,string>
+    public class EntityFrameworkDbContext : IdentityDbContext<AppUser, AppRole, string>
     {
         public EntityFrameworkDbContext(DbContextOptions options) : base(options) { }
 
@@ -22,6 +23,9 @@ namespace Persistence.Contexts
         public DbSet<Domain.Entities.File.File> Files { get; set; }
         public DbSet<InvoiceImageFile> InvoiceImageFiles { get; set; }
         public DbSet<ProductImageFile> ProductImageFiles { get; set; }
+        public DbSet<Menu> Menus { get; set; }
+        public DbSet<Endpoint> Endpoints { get; set; }
+
 
 
         //SaveChangeAsync Interceptor. Gelen isteğin arasına girip override ile buradaki kodları çalıştıracak ve yoluna öyle devam edecek
@@ -49,6 +53,5 @@ namespace Persistence.Contexts
             }
             return await base.SaveChangesAsync(cancellationToken);
         }
-
     }
 }

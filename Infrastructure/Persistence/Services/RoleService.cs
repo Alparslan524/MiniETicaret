@@ -42,7 +42,15 @@ namespace Persistence.Services
         public (object, int) GetAllRoles(int page, int size)
         {
             var query = _roleManager.Roles;
-            return (query.Skip(page * size).Take(size).Select(role => new { role.Id, role.Name }), query.Count());
+
+            IQueryable<AppRole> rolesQuery = null;
+
+            if (page != -1 && size != -1)
+                rolesQuery = query.Skip(page * size).Take(size);
+            else
+                rolesQuery = query;
+
+            return (rolesQuery.Select(r => new { r.Id, r.Name }), query.Count());
         }
 
         public async Task<(string id, string name)> GetRoleById(string id)
