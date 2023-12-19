@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.HttpLogging;
 using WebAPI.Extensions;
 using SignalR;
 using SignalR.Hubs;
+using WebAPI.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +41,11 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
 policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials()
 ));
 
-builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+    options.Filters.Add<RolePermissionFilter>();
+})
                 .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidator>())
                 //Fluent Validationu devreye soktuk
                 .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
